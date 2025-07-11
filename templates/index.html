@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar Panel Detection</title>
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+    <div class="background-animation"></div>
+    <div class="container">
+        <h1>Solar Panel Detection</h1>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" name="image" id="fileInput" accept="image/*" required>
+            <button type="submit">Upload & Detect</button>
+        </form>
+        <div id="result" class="hidden">
+            <h2>Detection Result</h2>
+            <img id="detectedImage" src="" alt="Detected Image">
+            <p><strong>Solar Panels Detected:</strong> <span id="panelCount"></span></p>
+            <p><strong>Total Area Covered:</strong> <span id="panelArea"></span> pixels²</p>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('uploadForm').onsubmit = async function (e) {
+            e.preventDefault();
+            let formData = new FormData();
+            let file = document.getElementById('fileInput').files[0];
+            formData.append("image", file);
+            
+            let response = await fetch("/upload", { method: "POST", body: formData });
+            let data = await response.json();
+
+            if (data.result_image) {
+                document.getElementById('detectedImage').src = data.result_image;
+                document.getElementById('panelCount').textContent = data.solar_panel_count;
+                document.getElementById('panelArea').textContent = data.total_area;
+                document.getElementById('result').classList.remove("hidden");
+            }
+        };
+    </script>
+</body>
+</html>
